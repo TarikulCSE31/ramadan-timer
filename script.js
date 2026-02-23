@@ -95,7 +95,7 @@ const translations = {
     en: {
         title: 'Ramadan Timer',
         ramadanDay: 'Ramadan Day',
-        currentTime: 'Current Time',
+        currentTime: 'Current Date & Time',
         nextEvent: 'Next Event',
         sehri: 'Sehri',
         iftar: 'Iftar',
@@ -109,12 +109,13 @@ const translations = {
         notInRamadan: 'Not in Ramadan',
         toggleFullscreen: 'Toggle Fullscreen',
         toggleTimeFormat: 'Toggle 12h/24h Format',
-        toggleLanguage: 'Toggle Language'
+        toggleLanguage: 'Toggle Language',
+        currentDate: 'Current Date & Time'
     },
     bn: {
         title: 'রমজান টাইমার',
         ramadanDay: 'রমজান দিন',
-        currentTime: 'বর্তমান সময়',
+        currentTime: 'বর্তমান তারিখ ও সময়',
         nextEvent: 'পরবর্তী ইভেন্ট',
         sehri: 'সাহরী',
         iftar: 'ইফতার',
@@ -171,6 +172,24 @@ function formatTimeString(timeString) {
         const period = hours >= 12 ? 'PM' : 'AM';
         const displayHours = hours % 12 || 12;
         return `${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${period}`;
+    }
+}
+
+// Format date in a readable format
+function formatDate(date) {
+    const monthNamesEn = ['January', 'February', 'March', 'April', 'May', 'June', 
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+    const monthNamesBn = ['জানুয়ারী', 'ফেব্রুয়ারী', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 
+                          'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
+    
+    const day = date.getDate();
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    
+    if (currentLanguage === 'bn') {
+        return `${day} ${monthNamesBn[month]}, ${year}`;
+    } else {
+        return `${monthNamesEn[month]} ${day}, ${year}`;
     }
 }
 
@@ -310,12 +329,13 @@ function updateTimer() {
             return;
         }
         
-        // Display current Bangladesh time
+        // Display current Bangladesh date and time
         const hours = now.getHours();
         const minutes = now.getMinutes();
         const secs = now.getSeconds();
         const formattedTime = formatTime(hours, minutes, secs);
-        systemTimeElement.textContent = `${t('currentTime')}: ${formattedTime}`;
+        const formattedDate = formatDate(now);
+        systemTimeElement.textContent = `${t('currentTime')}: ${formattedDate} - ${formattedTime}`;
         
         // Find the next event based on current Ramadan day
         const nextEventInfo = findNextEvent();
