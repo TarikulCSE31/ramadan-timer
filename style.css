@@ -344,7 +344,7 @@ body:fullscreen .container,
 body:-webkit-full-screen .container,
 body:-moz-full-screen .container,
 body:-ms-fullscreen .container {
-    max-width: 900px;
+    max-width: 1200px;
 }
 
 body:fullscreen .header h1,
@@ -358,9 +358,9 @@ body:fullscreen .time-value,
 body:-webkit-full-screen .time-value,
 body:-moz-full-screen .time-value,
 body:-ms-fullscreen .time-value {
-    font-size: 5rem;
-    min-width: 150px;
-    padding: 25px 30px;
+    font-size: 10rem;
+    min-width: 220px;
+    padding: 35px 40px;
 }
 
 body:fullscreen .event-name,
@@ -377,7 +377,7 @@ body:-ms-fullscreen .event-name {
 
 .container {
     width: 100%;
-    max-width: 650px;
+    max-width: 900px;
     max-height: 100vh;
     animation: fadeIn 0.8s ease-in;
     position: relative;
@@ -555,7 +555,7 @@ body:-ms-fullscreen .event-name {
 }
 
 .time-value {
-    font-size: clamp(2rem, 6vw, 4rem);
+    font-size: clamp(4rem, 10vw, 8rem);
     font-weight: 700;
     line-height: 1;
     color: #ffffff;
@@ -563,9 +563,9 @@ body:-ms-fullscreen .event-name {
         0 0 20px rgba(245, 158, 11, 0.6),
         0 4px 15px rgba(0, 0, 0, 0.5);
     background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(245, 158, 11, 0.08) 100%);
-    padding: clamp(12px, 2vh, 18px) clamp(15px, 2.5vw, 22px);
+    padding: clamp(15px, 2.5vh, 25px) clamp(20px, 3vw, 30px);
     border-radius: clamp(15px, 3vw, 20px);
-    min-width: clamp(80px, 15vw, 110px);
+    min-width: clamp(120px, 22vw, 180px);
     text-align: center;
     border: 2px solid rgba(245, 158, 11, 0.4);
     box-shadow: 
@@ -611,10 +611,10 @@ body:-ms-fullscreen .event-name {
 }
 
 .separator {
-    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-size: clamp(4rem, 9vw, 7rem);
     font-weight: 300;
     color: #fbbf24;
-    margin-top: clamp(-15px, -3vh, -20px);
+    margin-top: clamp(-20px, -4vh, -30px);
     text-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
     animation: blink 1s infinite;
 }
