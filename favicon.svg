@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fcd34d;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="48" fill="#0a1628"/>
+  <!-- Crescent moon -->
+  <path d="M 50 20 A 30 30 0 1 1 50 80 A 25 25 0 1 0 50 20 Z" fill="url(#goldGradient)"/>
+  <!-- Star -->
+  <path d="M 50 15 L 52 25 L 62 25 L 54 31 L 56 41 L 50 35 L 44 41 L 46 31 L 38 25 L 48 25 Z" fill="#fcd34d"/>
+  <!-- Glow effect -->
+  <circle cx="50" cy="50" r="45" fill="none" stroke="url(#goldGradient)" stroke-width="2" opacity="0.3"/>
+</svg>
