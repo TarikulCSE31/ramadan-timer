@@ -321,16 +321,29 @@ function updateTimer() {
         const nextEventInfo = findNextEvent();
         const nextEvent = nextEventInfo.event;
         
-        // Update display with today's Ramadan day and times
+        // Determine which day's schedule to display
+        let displaySchedule = todaySchedule;
+        
         if (todaySchedule) {
-            // We're in Ramadan - show today's info
+            // We're in Ramadan
+            const todayIftar = timeToDate(todaySchedule.iftar, todaySchedule.date);
+            
+            // If Iftar has passed, show next day's schedule
+            if (now >= todayIftar) {
+                const nextDaySchedule = getNextDaySchedule();
+                if (nextDaySchedule) {
+                    displaySchedule = nextDaySchedule;
+                }
+            }
+            
+            // Update display with the determined schedule
             const dayLabel = document.getElementById('ramadan-day-label');
             if (dayLabel) {
                 dayLabel.textContent = t('ramadanDay');
             }
-            ramadanDayElement.textContent = todaySchedule.day;
-            sehriTimeElement.textContent = formatTimeString(todaySchedule.sehri);
-            iftarTimeElement.textContent = formatTimeString(todaySchedule.iftar);
+            ramadanDayElement.textContent = displaySchedule.day;
+            sehriTimeElement.textContent = formatTimeString(displaySchedule.sehri);
+            iftarTimeElement.textContent = formatTimeString(displaySchedule.iftar);
         } else {
             // Not in Ramadan
             const dayLabel = document.getElementById('ramadan-day-label');
