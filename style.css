@@ -904,6 +904,18 @@ body:-ms-fullscreen .event-name {
         right: 10px;
     }
     
+    .calendar-btn {
+        width: 40px;
+        height: 40px;
+        bottom: 160px;
+        right: 10px;
+    }
+    
+    .calendar-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+    
     .time-format-btn {
         width: 40px;
         height: 40px;
@@ -1022,6 +1034,91 @@ body:-ms-fullscreen .event-name {
         padding: 6px 10px;
         font-size: clamp(0.7rem, 2vw, 0.9rem);
     }
+    
+    .fullscreen-btn {
+        width: 35px;
+        height: 35px;
+        bottom: 8px;
+        right: 8px;
+    }
+    
+    .time-format-btn {
+        width: 35px;
+        height: 35px;
+        bottom: 53px;
+        right: 8px;
+        font-size: 0.65rem;
+    }
+    
+    .language-btn {
+        width: 35px;
+        height: 35px;
+        bottom: 98px;
+        right: 8px;
+        font-size: 0.65rem;
+    }
+    
+    .calendar-btn {
+        width: 35px;
+        height: 35px;
+        bottom: 143px;
+        right: 8px;
+    }
+    
+    .calendar-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .fullscreen-icon,
+    .fullscreen-exit-icon {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+/* Tablet responsive */
+@media (max-width: 1024px) and (min-width: 601px) {
+    .fullscreen-btn {
+        width: 45px;
+        height: 45px;
+        bottom: 15px;
+        right: 15px;
+    }
+    
+    .time-format-btn {
+        width: 45px;
+        height: 45px;
+        bottom: 75px;
+        right: 15px;
+        font-size: 0.75rem;
+    }
+    
+    .language-btn {
+        width: 45px;
+        height: 45px;
+        bottom: 135px;
+        right: 15px;
+        font-size: 0.75rem;
+    }
+    
+    .calendar-btn {
+        width: 45px;
+        height: 45px;
+        bottom: 195px;
+        right: 15px;
+    }
+    
+    .calendar-btn svg {
+        width: 22px;
+        height: 22px;
+    }
+    
+    .fullscreen-icon,
+    .fullscreen-exit-icon {
+        width: 22px;
+        height: 22px;
+    }
 }
 
 /* Very small screens */
@@ -1056,18 +1153,39 @@ body:-ms-fullscreen .event-name {
     
     .fullscreen-btn,
     .time-format-btn,
-    .language-btn {
+    .language-btn,
+    .calendar-btn {
         width: 35px;
         height: 35px;
         font-size: 0.65rem;
+        right: 8px;
+    }
+    
+    .fullscreen-btn {
+        bottom: 8px;
     }
     
     .time-format-btn {
-        bottom: 55px;
+        bottom: 53px;
     }
     
     .language-btn {
-        bottom: 100px;
+        bottom: 98px;
+    }
+    
+    .calendar-btn {
+        bottom: 143px;
+    }
+    
+    .calendar-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .fullscreen-icon,
+    .fullscreen-exit-icon {
+        width: 18px;
+        height: 18px;
     }
 }
 
@@ -1391,4 +1509,6 @@ body:-ms-fullscreen .calendar-btn {
     opacity: 1 !important;
     bottom: 200px;
     right: 20px;
+    width: 50px;
+    height: 50px;
 }
