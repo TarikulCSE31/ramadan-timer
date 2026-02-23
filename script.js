@@ -1,0 +1,638 @@
+// Ramadan Schedule Data (2026)
+const ramadanSchedule = [
+    // 10 Days of Mercy (রহমতের ১০ দিন)
+    { day: 1, date: '2026-02-19', dayName: 'বৃহস্পতিবার', sehri: '05:12', iftar: '17:58' },
+    { day: 2, date: '2026-02-20', dayName: 'শুক্রবার', sehri: '05:11', iftar: '17:58' },
+    { day: 3, date: '2026-02-21', dayName: 'শনিবার', sehri: '05:11', iftar: '17:59' },
+    { day: 4, date: '2026-02-22', dayName: 'রবিবার', sehri: '05:10', iftar: '17:59' },
+    { day: 5, date: '2026-02-23', dayName: 'সোমবার', sehri: '05:09', iftar: '18:00' },
+    { day: 6, date: '2026-02-24', dayName: 'মঙ্গলবার', sehri: '05:08', iftar: '18:00' },
+    { day: 7, date: '2026-02-25', dayName: 'বুধবার', sehri: '05:08', iftar: '18:01' },
+    { day: 8, date: '2026-02-26', dayName: 'বৃহস্পতিবার', sehri: '05:07', iftar: '18:01' },
+    { day: 9, date: '2026-02-27', dayName: 'শুক্রবার', sehri: '05:06', iftar: '18:02' },
+    { day: 10, date: '2026-02-28', dayName: 'শনিবার', sehri: '05:05', iftar: '18:02' },
+    
+    // 10 Days of Forgiveness (মাগফিরাতের ১০ দিন)
+    { day: 11, date: '2026-03-01', dayName: 'রবিবার', sehri: '05:05', iftar: '18:03' },
+    { day: 12, date: '2026-03-02', dayName: 'সোমবার', sehri: '05:04', iftar: '18:03' },
+    { day: 13, date: '2026-03-03', dayName: 'মঙ্গলবার', sehri: '05:03', iftar: '18:04' },
+    { day: 14, date: '2026-03-04', dayName: 'বুধবার', sehri: '05:02', iftar: '18:04' },
+    { day: 15, date: '2026-03-05', dayName: 'বৃহস্পতিবার', sehri: '05:01', iftar: '18:05' },
+    { day: 16, date: '2026-03-06', dayName: 'শুক্রবার', sehri: '05:00', iftar: '18:05' },
+    { day: 17, date: '2026-03-07', dayName: 'শনিবার', sehri: '04:59', iftar: '18:06' },
+    { day: 18, date: '2026-03-08', dayName: 'রবিবার', sehri: '04:58', iftar: '18:06' },
+    { day: 19, date: '2026-03-09', dayName: 'সোমবার', sehri: '04:57', iftar: '18:07' },
+    { day: 20, date: '2026-03-10', dayName: 'মঙ্গলবার', sehri: '04:57', iftar: '18:07' },
+    
+    // 10 Days of Salvation (নাজাতের ১০ দিন)
+    { day: 21, date: '2026-03-11', dayName: 'বুধবার', sehri: '04:56', iftar: '18:07' },
+    { day: 22, date: '2026-03-12', dayName: 'বৃহস্পতিবার', sehri: '04:55', iftar: '18:08' },
+    { day: 23, date: '2026-03-13', dayName: 'শুক্রবার', sehri: '04:54', iftar: '18:08' },
+    { day: 24, date: '2026-03-14', dayName: 'শনিবার', sehri: '04:53', iftar: '18:09' },
+    { day: 25, date: '2026-03-15', dayName: 'রবিবার', sehri: '04:52', iftar: '18:09' },
+    { day: 26, date: '2026-03-16', dayName: 'সোমবার', sehri: '04:51', iftar: '18:10' },
+    { day: 27, date: '2026-03-17', dayName: 'মঙ্গলবার', sehri: '04:50', iftar: '18:10' },
+    { day: 28, date: '2026-03-18', dayName: 'বুধবার', sehri: '04:49', iftar: '18:10' },
+    { day: 29, date: '2026-03-19', dayName: 'বৃহস্পতিবার', sehri: '04:48', iftar: '18:11' },
+    { day: 30, date: '2026-03-20', dayName: 'শুক্রবার', sehri: '04:47', iftar: '18:11' }
+];
+
+// Get current date in YYYY-MM-DD format
+// For testing: you can temporarily modify this function to return a date within Ramadan
+// Example: return '2025-02-25'; // This would simulate being on day 7 of Ramadan
+function getCurrentDate() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+// Get current time in HH:MM format
+function getCurrentTime() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+}
+
+// Cookie management functions
+function setCookie(name, value, days) {
+    const expires = new Date();
+    expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
+}
+
+function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+
+// Time format conversion
+let timeFormat24h = true; // Default to 24h format
+
+// Language settings
+let currentLanguage = 'en'; // Default to English
+
+// Translation object
+const translations = {
+    en: {
+        title: 'Ramadan Timer',
+        ramadanDay: 'Ramadan Day',
+        currentTime: 'Current Time',
+        nextEvent: 'Next Event',
+        sehri: 'Sehri',
+        iftar: 'Iftar',
+        sehriTime: 'Sehri End Time',
+        iftarTime: 'Iftar Time',
+        hours: 'Hours',
+        minutes: 'Minutes',
+        seconds: 'Seconds',
+        days: 'Days',
+        ramadanEnd: 'Ramadan Ended',
+        notInRamadan: 'Not in Ramadan',
+        toggleFullscreen: 'Toggle Fullscreen',
+        toggleTimeFormat: 'Toggle 12h/24h Format',
+        toggleLanguage: 'Toggle Language'
+    },
+    bn: {
+        title: 'রমজান টাইমার',
+        ramadanDay: 'রমজান দিন',
+        currentTime: 'বর্তমান সময়',
+        nextEvent: 'পরবর্তী ইভেন্ট',
+        sehri: 'সাহরী',
+        iftar: 'ইফতার',
+        sehriTime: 'সাহরীর শেষ সময়',
+        iftarTime: 'ইফতারের সময়',
+        hours: 'ঘণ্টা',
+        minutes: 'মিনিট',
+        seconds: 'সেকেন্ড',
+        days: 'দিন',
+        ramadanEnd: 'রমজান শেষ',
+        notInRamadan: 'রমজান নেই',
+        toggleFullscreen: 'পূর্ণস্ক্রীন টগল করুন',
+        toggleTimeFormat: '১২/২৪ ঘণ্টা ফরম্যাট টগল করুন',
+        toggleLanguage: 'ভাষা পরিবর্তন করুন'
+    }
+};
+
+// Get translation
+function t(key) {
+    return translations[currentLanguage][key] || key;
+}
+
+function formatTime24h(hours, minutes, seconds) {
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+function formatTime12h(hours, minutes, seconds) {
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours % 12 || 12;
+    return `${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${period}`;
+}
+
+function formatTime(hours, minutes, seconds) {
+    if (timeFormat24h) {
+        return formatTime24h(hours, minutes, seconds);
+    } else {
+        return formatTime12h(hours, minutes, seconds);
+    }
+}
+
+// Convert time string (HH:MM) to 12h or 24h format
+function formatTimeString(timeString) {
+    if (!timeString || timeString === '-') {
+        return timeString;
+    }
+    
+    const [hours, minutes] = timeString.split(':').map(Number);
+    
+    if (timeFormat24h) {
+        // Return as 24h format (HH:MM)
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+    } else {
+        // Convert to 12h format (HH:MM AM/PM)
+        const period = hours >= 12 ? 'PM' : 'AM';
+        const displayHours = hours % 12 || 12;
+        return `${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${period}`;
+    }
+}
+
+// Find today's schedule
+function getTodaySchedule() {
+    const currentDate = getCurrentDate();
+    return ramadanSchedule.find(schedule => schedule.date === currentDate);
+}
+
+// Find next day's schedule
+function getNextDaySchedule() {
+    const currentDate = getCurrentDate();
+    const currentIndex = ramadanSchedule.findIndex(schedule => schedule.date === currentDate);
+    
+    if (currentIndex === -1) {
+        // If today is not in Ramadan, find the first day
+        return ramadanSchedule[0];
+    }
+    
+    if (currentIndex < ramadanSchedule.length - 1) {
+        return ramadanSchedule[currentIndex + 1];
+    }
+    
+    // If it's the last day, return null
+    return null;
+}
+
+// Find the next event based on current Ramadan day
+// Returns: { event: Date, name: string, nameKey: string, schedule: object }
+function findNextEvent() {
+    const now = new Date();
+    const todaySchedule = getTodaySchedule();
+    const nextDaySchedule = getNextDaySchedule();
+    
+    // If we're in Ramadan
+    if (todaySchedule) {
+        const todayIftar = timeToDate(todaySchedule.iftar, todaySchedule.date);
+        
+        // If current time is before Iftar, show countdown to Iftar
+        if (now < todayIftar) {
+            return {
+                event: todayIftar,
+                name: 'ইফতার',
+                nameKey: 'iftar',
+                schedule: todaySchedule
+            };
+        } else {
+            // Iftar is over, show countdown to next day's Sehri
+            if (nextDaySchedule) {
+                const nextSehri = timeToDate(nextDaySchedule.sehri, nextDaySchedule.date);
+                return {
+                    event: nextSehri,
+                    name: 'সাহরী',
+                    nameKey: 'sehri',
+                    schedule: nextDaySchedule
+                };
+            } else {
+                // Last day of Ramadan, Iftar is over
+                return {
+                    event: null,
+                    name: 'রমজান শেষ',
+                    nameKey: 'ramadanEnd',
+                    schedule: todaySchedule
+                };
+            }
+        }
+    } else {
+        // Not in Ramadan
+        return {
+            event: null,
+            name: 'রমজান নেই',
+            nameKey: 'notInRamadan',
+            schedule: null
+        };
+    }
+}
+
+// Convert time string (HH:MM) to Date object for today (using system local time)
+function timeToDate(timeString, dateString) {
+    const [hours, minutes] = timeString.split(':').map(Number);
+    // Parse date string and create date in local timezone
+    const [year, month, day] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day, hours, minutes, 0, 0);
+    return date;
+}
+
+// Calculate time difference in milliseconds
+function getTimeDifference(targetDate) {
+    const now = new Date();
+    return targetDate - now;
+}
+
+// Format time difference to days, hours, minutes, seconds
+function formatTimeDifference(ms) {
+    if (ms <= 0) {
+        return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+    }
+    
+    const totalSeconds = Math.floor(ms / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    
+    return { days, hours, minutes, seconds };
+}
+
+// Update the timer display
+function updateTimer() {
+    try {
+        const now = new Date();
+        const todaySchedule = getTodaySchedule();
+        
+        // Get all DOM elements
+        const systemTimeElement = document.getElementById('system-time');
+        const ramadanDayElement = document.getElementById('ramadan-day');
+        const sehriTimeElement = document.getElementById('sehri-time');
+        const iftarTimeElement = document.getElementById('iftar-time');
+        const eventNameElement = document.getElementById('event-name');
+        const hoursElement = document.getElementById('hours');
+        const minutesElement = document.getElementById('minutes');
+        const secondsElement = document.getElementById('seconds');
+        
+        // Check if all elements exist
+        if (!systemTimeElement || !ramadanDayElement || !sehriTimeElement || 
+            !iftarTimeElement || !eventNameElement || !hoursElement || 
+            !minutesElement || !secondsElement) {
+            console.error('Some DOM elements are missing');
+            return;
+        }
+        
+        // Display current system time
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const secs = now.getSeconds();
+        const formattedTime = formatTime(hours, minutes, secs);
+        systemTimeElement.textContent = `${t('currentTime')}: ${formattedTime}`;
+        
+        // Find the next event based on current Ramadan day
+        const nextEventInfo = findNextEvent();
+        const nextEvent = nextEventInfo.event;
+        
+        // Update display with today's Ramadan day and times
+        if (todaySchedule) {
+            // We're in Ramadan - show today's info
+            const dayLabel = document.getElementById('ramadan-day-label');
+            if (dayLabel) {
+                dayLabel.textContent = t('ramadanDay');
+            }
+            ramadanDayElement.textContent = todaySchedule.day;
+            sehriTimeElement.textContent = formatTimeString(todaySchedule.sehri);
+            iftarTimeElement.textContent = formatTimeString(todaySchedule.iftar);
+        } else {
+            // Not in Ramadan
+            const dayLabel = document.getElementById('ramadan-day-label');
+            if (dayLabel) {
+                dayLabel.textContent = t('ramadanDay');
+            }
+            ramadanDayElement.textContent = '-';
+            sehriTimeElement.textContent = '-';
+            iftarTimeElement.textContent = '-';
+        }
+        
+        // Update event name using translation key
+        if (nextEventInfo.nameKey) {
+            eventNameElement.textContent = t(nextEventInfo.nameKey);
+        } else {
+            eventNameElement.textContent = '-';
+        }
+        
+        // Calculate and display countdown to next event
+        if (nextEvent) {
+            const timeDiff = getTimeDifference(nextEvent);
+            const timeObj = formatTimeDifference(timeDiff);
+            
+            // Show days if countdown is more than 24 hours
+            const daysElement = document.getElementById('days');
+            const daysUnit = document.getElementById('days-unit');
+            const daysSeparator = document.getElementById('days-separator');
+            
+            if (timeObj.days > 0) {
+                if (daysElement && daysUnit && daysSeparator) {
+                    daysElement.textContent = String(timeObj.days).padStart(2, '0');
+                    daysUnit.style.display = 'flex';
+                    daysSeparator.style.display = 'block';
+                }
+            } else {
+                if (daysUnit && daysSeparator) {
+                    daysUnit.style.display = 'none';
+                    daysSeparator.style.display = 'none';
+                }
+            }
+            
+            hoursElement.textContent = String(timeObj.hours).padStart(2, '0');
+            minutesElement.textContent = String(timeObj.minutes).padStart(2, '0');
+            secondsElement.textContent = String(timeObj.seconds).padStart(2, '0');
+        } else {
+            // No upcoming event (not in Ramadan or Ramadan ended)
+            const daysElement = document.getElementById('days');
+            const daysUnit = document.getElementById('days-unit');
+            const daysSeparator = document.getElementById('days-separator');
+            
+            if (daysUnit && daysSeparator) {
+                daysUnit.style.display = 'none';
+                daysSeparator.style.display = 'none';
+            }
+            
+            hoursElement.textContent = '00';
+            minutesElement.textContent = '00';
+            secondsElement.textContent = '00';
+        }
+    } catch (error) {
+        console.error('Error updating timer:', error);
+    }
+}
+
+// Initialize and update timer every second
+let timerInterval = null;
+
+function initTimer() {
+    console.log('Timer initialized');
+    console.log('Current date:', getCurrentDate());
+    console.log('Current time:', getCurrentTime());
+    
+    // Clear any existing interval
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+    
+    // Update immediately
+    updateTimer();
+    
+    // Update every second using system time
+    timerInterval = setInterval(() => {
+        updateTimer();
+    }, 1000);
+    
+    console.log('Timer started and updating every second');
+}
+
+// Fullscreen functionality
+function toggleFullscreen() {
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    
+    if (!document.fullscreenElement && 
+        !document.webkitFullscreenElement && 
+        !document.mozFullScreenElement && 
+        !document.msFullscreenElement) {
+        // Enter fullscreen
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+        } else if (document.documentElement.webkitRequestFullscreen) {
+            document.documentElement.webkitRequestFullscreen();
+        } else if (document.documentElement.mozRequestFullScreen) {
+            document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.msRequestFullscreen) {
+            document.documentElement.msRequestFullscreen();
+        }
+        fullscreenBtn.classList.add('fullscreen-active');
+    } else {
+        // Exit fullscreen
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+        fullscreenBtn.classList.remove('fullscreen-active');
+    }
+}
+
+// Handle fullscreen change events
+function handleFullscreenChange() {
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const isFullscreen = !!(document.fullscreenElement || 
+                           document.webkitFullscreenElement || 
+                           document.mozFullScreenElement || 
+                           document.msFullscreenElement);
+    
+    if (isFullscreen) {
+        fullscreenBtn.classList.add('fullscreen-active');
+    } else {
+        fullscreenBtn.classList.remove('fullscreen-active');
+    }
+}
+
+// Initialize fullscreen button
+function initFullscreen() {
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    if (fullscreenBtn) {
+        fullscreenBtn.addEventListener('click', toggleFullscreen);
+        
+        // Listen for fullscreen change events
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+    }
+}
+
+// Update all text content based on current language
+function updateLanguage() {
+    // Update page title
+    const pageTitle = document.getElementById('page-title');
+    if (pageTitle) pageTitle.textContent = t('title');
+    
+    // Update HTML lang attribute
+    document.documentElement.lang = currentLanguage;
+    
+    // Update header
+    const headerTitle = document.getElementById('header-title');
+    const headerSubtitle = document.getElementById('header-subtitle');
+    if (headerTitle) headerTitle.textContent = t('title');
+    if (headerSubtitle) headerSubtitle.textContent = t('title');
+    
+    // Update labels
+    const ramadanDayLabel = document.getElementById('ramadan-day-label');
+    const currentTimeLabel = document.getElementById('current-time-label');
+    const eventLabel = document.getElementById('event-label');
+    const daysLabel = document.getElementById('days-label');
+    const hoursLabel = document.getElementById('hours-label');
+    const minutesLabel = document.getElementById('minutes-label');
+    const secondsLabel = document.getElementById('seconds-label');
+    const sehriLabel = document.getElementById('sehri-label');
+    const iftarLabel = document.getElementById('iftar-label');
+    
+    if (ramadanDayLabel) ramadanDayLabel.textContent = t('ramadanDay');
+    if (currentTimeLabel) currentTimeLabel.textContent = t('currentTime');
+    if (eventLabel) eventLabel.textContent = t('nextEvent');
+    if (daysLabel) daysLabel.textContent = t('days');
+    if (hoursLabel) hoursLabel.textContent = t('hours');
+    if (minutesLabel) minutesLabel.textContent = t('minutes');
+    if (secondsLabel) secondsLabel.textContent = t('seconds');
+    if (sehriLabel) sehriLabel.textContent = t('sehriTime') + ':';
+    if (iftarLabel) iftarLabel.textContent = t('iftarTime') + ':';
+    
+    // Update button titles and aria-labels
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const timeFormatBtn = document.getElementById('time-format-btn');
+    const languageBtn = document.getElementById('language-btn');
+    
+    if (fullscreenBtn) {
+        fullscreenBtn.title = t('toggleFullscreen');
+        fullscreenBtn.setAttribute('aria-label', t('toggleFullscreen'));
+    }
+    if (timeFormatBtn) {
+        timeFormatBtn.title = t('toggleTimeFormat');
+        timeFormatBtn.setAttribute('aria-label', t('toggleTimeFormat'));
+    }
+    if (languageBtn) {
+        languageBtn.title = t('toggleLanguage');
+        languageBtn.setAttribute('aria-label', t('toggleLanguage'));
+    }
+    
+    // Update event names and other dynamic content
+    updateTimer();
+}
+
+// Initialize language button
+function initLanguage() {
+    // Load saved preference from cookie
+    const savedLanguage = getCookie('language');
+    if (savedLanguage === 'bn' || savedLanguage === 'en') {
+        currentLanguage = savedLanguage;
+    } else {
+        currentLanguage = 'en'; // Default to English
+    }
+    
+    const languageBtn = document.getElementById('language-btn');
+    const languageText = document.getElementById('language-text');
+    
+    if (languageBtn && languageText) {
+        // Update button text and active state based on current language
+        updateLanguageButton();
+        
+        // Update all text content
+        updateLanguage();
+        
+        // Toggle language on click
+        languageBtn.addEventListener('click', () => {
+            currentLanguage = currentLanguage === 'en' ? 'bn' : 'en';
+            
+            // Save preference to cookie (expires in 365 days)
+            setCookie('language', currentLanguage, 365);
+            
+            // Update button state
+            updateLanguageButton();
+            
+            // Update all text content
+            updateLanguage();
+        });
+    }
+}
+
+// Update language button visual state
+function updateLanguageButton() {
+    const languageBtn = document.getElementById('language-btn');
+    const languageText = document.getElementById('language-text');
+    
+    if (languageBtn && languageText) {
+        languageText.textContent = currentLanguage.toUpperCase();
+    }
+}
+
+// Initialize time format button
+function initTimeFormat() {
+    // Load saved preference from cookie
+    const savedFormat = getCookie('timeFormat');
+    if (savedFormat === '12h') {
+        timeFormat24h = false;
+    } else if (savedFormat === '24h') {
+        timeFormat24h = true;
+    }
+    
+    const timeFormatBtn = document.getElementById('time-format-btn');
+    const timeFormatText = document.getElementById('time-format-text');
+    
+    if (timeFormatBtn && timeFormatText) {
+        // Update button text and active state based on current format
+        updateTimeFormatButton();
+        
+        // Toggle time format on click
+        timeFormatBtn.addEventListener('click', () => {
+            timeFormat24h = !timeFormat24h;
+            
+            // Save preference to cookie (expires in 365 days)
+            setCookie('timeFormat', timeFormat24h ? '24h' : '12h', 365);
+            
+            // Update button state
+            updateTimeFormatButton();
+            
+            // Update display immediately
+            updateTimer();
+        });
+    }
+}
+
+// Update time format button visual state
+function updateTimeFormatButton() {
+    const timeFormatBtn = document.getElementById('time-format-btn');
+    const timeFormatText = document.getElementById('time-format-text');
+    
+    if (timeFormatBtn && timeFormatText) {
+        timeFormatText.textContent = timeFormat24h ? '24h' : '12h';
+    }
+}
+
+// Start the timer when page loads (using system datetime)
+// This ensures the timer starts right away using the system's current date and time
+(function() {
+    console.log('Script loaded, DOM ready state:', document.readyState);
+    
+    function startTimer() {
+        // Double check DOM is ready
+        if (document.getElementById('hours') && document.getElementById('minutes')) {
+            initLanguage(); // Initialize language first
+            initTimer();
+            initFullscreen();
+            initTimeFormat();
+        } else {
+            // Retry after a short delay
+            setTimeout(startTimer, 50);
+        }
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', startTimer);
+    } else {
+        // DOM is already loaded, start immediately
+        startTimer();
+    }
+})();

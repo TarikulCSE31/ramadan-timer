@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Ramadan Timer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="stars"></div>
+    <div class="crescent-moon"></div>
+    <button class="fullscreen-btn" id="fullscreen-btn" title="" aria-label="">
+        <svg class="fullscreen-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+        </svg>
+        <svg class="fullscreen-exit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display: none;">
+            <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>
+        </svg>
+    </button>
+    <button class="time-format-btn" id="time-format-btn" title="" aria-label="">
+        <span id="time-format-text">24h</span>
+    </button>
+    <button class="language-btn" id="language-btn" title="" aria-label="">
+        <span id="language-text">EN</span>
+    </button>
+    <div class="container">
+        <div class="header">
+            <div class="crescent-icon">🌙</div>
+            <h1 id="header-title">Ramadan Timer</h1>
+            <p class="subtitle" id="header-subtitle">Ramadan Timer</p>
+            <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+        </div>
+        
+        <div class="timer-card">
+            <div class="current-day">
+                <span id="current-day-text"><span id="ramadan-day-label">Ramadan Day</span>: <span id="ramadan-day">-</span></span>
+                <div class="system-time" id="system-time"><span id="current-time-label">Current Time</span>: -</div>
+            </div>
+            
+            <div class="next-event">
+                <div class="event-label" id="event-label">Next Event</div>
+                <div class="event-name" id="event-name">-</div>
+            </div>
+            
+            <div class="countdown">
+                <div class="time-unit" id="days-unit" style="display: none;">
+                    <div class="time-value" id="days">00</div>
+                    <div class="time-label" id="days-label">Days</div>
+                </div>
+                <div class="separator" id="days-separator" style="display: none;">:</div>
+                <div class="time-unit">
+                    <div class="time-value" id="hours">00</div>
+                    <div class="time-label" id="hours-label">Hours</div>
+                </div>
+                <div class="separator">:</div>
+                <div class="time-unit">
+                    <div class="time-value" id="minutes">00</div>
+                    <div class="time-label" id="minutes-label">Minutes</div>
+                </div>
+                <div class="separator">:</div>
+                <div class="time-unit">
+                    <div class="time-value" id="seconds">00</div>
+                    <div class="time-label" id="seconds-label">Seconds</div>
+                </div>
+            </div>
+            
+            <div class="event-time">
+                <div class="time-info">
+                    <span class="info-label" id="sehri-label">Sehri End Time:</span>
+                    <span class="info-value" id="sehri-time">-</span>
+                </div>
+                <div class="time-info">
+                    <span class="info-label" id="iftar-label">Iftar Time:</span>
+                    <span class="info-value" id="iftar-time">-</span>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
