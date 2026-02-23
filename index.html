@@ -28,6 +28,14 @@
     <button class="language-btn" id="language-btn" title="" aria-label="">
         <span id="language-text">EN</span>
     </button>
+    <button class="calendar-btn" id="calendar-btn" title="" aria-label="">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+    </button>
     <div class="container">
         <div class="header">
             <div class="crescent-icon">🌙</div>
@@ -80,6 +88,17 @@
                 </div>
             </div>
             
+        </div>
+    </div>
+    
+    <!-- Calendar Modal -->
+    <div class="modal-overlay" id="calendar-modal">
+        <div class="modal-content">
+            <div class="modal-header-section">
+                <button class="modal-close" id="modal-close">&times;</button>
+                <h2 class="calendar-title" id="calendar-title">Ramadan Calendar 2026</h2>
+            </div>
+            <div class="calendar-grid" id="calendar-grid"></div>
         </div>
     </div>
     

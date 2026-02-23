@@ -551,6 +551,20 @@ function updateLanguage() {
     
     // Update event names and other dynamic content
     updateTimer();
+    
+    // Update calendar if modal is open
+    const modal = document.getElementById('calendar-modal');
+    if (modal && modal.classList.contains('active')) {
+        initCalendar();
+    }
+    
+    // Update calendar title
+    const calendarTitle = document.getElementById('calendar-title');
+    if (calendarTitle) {
+        calendarTitle.textContent = currentLanguage === 'en' 
+            ? 'Ramadan Calendar 2026'
+            : 'রমজান ক্যালেন্ডার ২০২৬';
+    }
 }
 
 // Initialize language button
@@ -642,6 +656,140 @@ function updateTimeFormatButton() {
     }
 }
 
+// Initialize and render Ramadan calendar
+function initCalendar() {
+    const calendarGrid = document.getElementById('calendar-grid');
+    if (!calendarGrid) return;
+    
+    // Clear existing content
+    calendarGrid.innerHTML = '';
+    
+    // Create header row
+    const headerRow = document.createElement('div');
+    headerRow.className = 'calendar-header';
+    const headers = currentLanguage === 'en' 
+        ? ['Day', 'Date', 'Sehri', 'Iftar']
+        : ['দিন', 'তারিখ', 'সাহরী', 'ইফতার'];
+    
+    headers.forEach(header => {
+        const headerCell = document.createElement('div');
+        headerCell.className = 'calendar-header-cell';
+        headerCell.textContent = header;
+        headerRow.appendChild(headerCell);
+    });
+    calendarGrid.appendChild(headerRow);
+    
+    // Get current date and determine which day to highlight (matching main screen logic)
+    const now = getBangladeshTime();
+    const currentDate = getCurrentDate();
+    const todaySchedule = ramadanSchedule.find(schedule => schedule.date === currentDate);
+    
+    // Determine which day to highlight based on main screen logic
+    let highlightDate = currentDate;
+    if (todaySchedule) {
+        const todayIftar = timeToDate(todaySchedule.iftar, todaySchedule.date);
+        // If Iftar has passed, highlight next day
+        if (now >= todayIftar) {
+            const nextDaySchedule = ramadanSchedule.find(schedule => {
+                const scheduleDate = new Date(schedule.date);
+                const todayDate = new Date(currentDate);
+                return scheduleDate > todayDate;
+            });
+            if (nextDaySchedule) {
+                highlightDate = nextDaySchedule.date;
+            }
+        }
+    }
+    
+    // Create rows for each day
+    ramadanSchedule.forEach(day => {
+        const row = document.createElement('div');
+        row.className = 'calendar-row';
+        if (day.date === highlightDate) {
+            row.classList.add('current-day-row');
+        }
+        
+        // Day number
+        const dayCell = document.createElement('div');
+        dayCell.className = 'calendar-cell day-cell';
+        dayCell.textContent = day.day;
+        row.appendChild(dayCell);
+        
+        // Date
+        const dateCell = document.createElement('div');
+        dateCell.className = 'calendar-cell date-cell';
+        const dateObj = new Date(day.date);
+        const monthNames = currentLanguage === 'en' 
+            ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            : ['জানু', 'ফেব্রু', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্ট', 'অক্টো', 'নভে', 'ডিসে'];
+        dateCell.textContent = `${dateObj.getDate()} ${monthNames[dateObj.getMonth()]}`;
+        row.appendChild(dateCell);
+        
+        // Sehri time
+        const sehriCell = document.createElement('div');
+        sehriCell.className = 'calendar-cell time-cell';
+        sehriCell.textContent = formatTimeString(day.sehri);
+        row.appendChild(sehriCell);
+        
+        // Iftar time
+        const iftarCell = document.createElement('div');
+        iftarCell.className = 'calendar-cell time-cell';
+        iftarCell.textContent = formatTimeString(day.iftar);
+        row.appendChild(iftarCell);
+        
+        calendarGrid.appendChild(row);
+    });
+}
+
+// Calendar modal functions
+function openCalendarModal() {
+    const modal = document.getElementById('calendar-modal');
+    if (modal) {
+        initCalendar(); // Refresh calendar data
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeCalendarModal() {
+    const modal = document.getElementById('calendar-modal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+// Initialize calendar button
+function initCalendarButton() {
+    const calendarBtn = document.getElementById('calendar-btn');
+    const modalClose = document.getElementById('modal-close');
+    const modal = document.getElementById('calendar-modal');
+    
+    if (calendarBtn) {
+        calendarBtn.addEventListener('click', openCalendarModal);
+    }
+    
+    if (modalClose) {
+        modalClose.addEventListener('click', closeCalendarModal);
+    }
+    
+    // Close modal when clicking outside
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeCalendarModal();
+            }
+        });
+    }
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeCalendarModal();
+        }
+    });
+}
+
 // Start the timer when page loads (using system datetime)
 // This ensures the timer starts right away using the system's current date and time
 (function() {
@@ -654,6 +802,7 @@ function updateTimeFormatButton() {
             initTimer();
             initFullscreen();
             initTimeFormat();
+            initCalendarButton(); // Initialize calendar button
         } else {
             // Retry after a short delay
             setTimeout(startTimer, 50);
