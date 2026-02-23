@@ -37,22 +37,32 @@ const ramadanSchedule = [
     { day: 30, date: '2026-03-20', dayName: 'শুক্রবার', sehri: '04:47', iftar: '18:11' }
 ];
 
-// Get current date in YYYY-MM-DD format
+// Get current date and time in Bangladesh Standard Time (BST, UTC+6)
+function getBangladeshTime() {
+    const now = new Date();
+    // Bangladesh is UTC+6
+    const bangladeshOffset = 6 * 60; // 6 hours in minutes
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const bangladeshTime = new Date(utc + (bangladeshOffset * 60000));
+    return bangladeshTime;
+}
+
+// Get current date in YYYY-MM-DD format (Bangladesh time)
 // For testing: you can temporarily modify this function to return a date within Ramadan
 // Example: return '2025-02-25'; // This would simulate being on day 7 of Ramadan
 function getCurrentDate() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
+    const bangladeshTime = getBangladeshTime();
+    const year = bangladeshTime.getFullYear();
+    const month = String(bangladeshTime.getMonth() + 1).padStart(2, '0');
+    const day = String(bangladeshTime.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
 
-// Get current time in HH:MM format
+// Get current time in HH:MM format (Bangladesh time)
 function getCurrentTime() {
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const bangladeshTime = getBangladeshTime();
+    const hours = String(bangladeshTime.getHours()).padStart(2, '0');
+    const minutes = String(bangladeshTime.getMinutes()).padStart(2, '0');
     return `${hours}:${minutes}`;
 }
 
@@ -191,7 +201,7 @@ function getNextDaySchedule() {
 // Find the next event based on current Ramadan day
 // Returns: { event: Date, name: string, nameKey: string, schedule: object }
 function findNextEvent() {
-    const now = new Date();
+    const now = getBangladeshTime();
     const todaySchedule = getTodaySchedule();
     const nextDaySchedule = getNextDaySchedule();
     
@@ -238,18 +248,26 @@ function findNextEvent() {
     }
 }
 
-// Convert time string (HH:MM) to Date object for today (using system local time)
+// Convert time string (HH:MM) to Date object for today (using Bangladesh time)
 function timeToDate(timeString, dateString) {
     const [hours, minutes] = timeString.split(':').map(Number);
-    // Parse date string and create date in local timezone
+    // Parse date string
     const [year, month, day] = dateString.split('-').map(Number);
-    const date = new Date(year, month - 1, day, hours, minutes, 0, 0);
+    // Create a date object representing the Bangladesh time
+    // Bangladesh is UTC+6, so to get a Date that represents Bangladesh time:
+    // We create a UTC date that is 6 hours earlier, so when JavaScript converts it
+    // to Bangladesh time (adds 6 hours), we get the correct time
+    const bangladeshOffset = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
+    // Create UTC date for the given date and time
+    const utcDate = new Date(Date.UTC(year, month - 1, day, hours, minutes, 0, 0));
+    // Subtract 6 hours so that when converted to Bangladesh time (UTC+6), it shows correctly
+    const date = new Date(utcDate.getTime() - bangladeshOffset);
     return date;
 }
 
 // Calculate time difference in milliseconds
 function getTimeDifference(targetDate) {
-    const now = new Date();
+    const now = getBangladeshTime();
     return targetDate - now;
 }
 
@@ -271,7 +289,7 @@ function formatTimeDifference(ms) {
 // Update the timer display
 function updateTimer() {
     try {
-        const now = new Date();
+        const now = getBangladeshTime();
         const todaySchedule = getTodaySchedule();
         
         // Get all DOM elements
@@ -292,7 +310,7 @@ function updateTimer() {
             return;
         }
         
-        // Display current system time
+        // Display current Bangladesh time
         const hours = now.getHours();
         const minutes = now.getMinutes();
         const secs = now.getSeconds();
