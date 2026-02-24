@@ -90,6 +90,16 @@ let timeFormat24h = true; // Default to 24h format
 // Language settings
 let currentLanguage = 'en'; // Default to English
 
+// Notifications & Adhan: track last triggered so we only fire once per event
+let lastNotifiedSehriKey = '';  // e.g. '2026-02-24'
+let lastNotifiedIftarKey = '';
+let adhanFajr = null;
+let adhanIftar = null;
+const ADHAN_FAJR_SRC = 'audio/fajr-adhan.mp3';
+const ADHAN_IFTAR_SRC = 'audio/iftar-adhan.mp3';
+// Fallback when local files are missing (public domain adhan)
+const ADHAN_FALLBACK_URL = 'https://upload.wikimedia.org/wikipedia/commons/2/2b/Beautiful_adhan.ogg';
+
 // Translation object
 const translations = {
     en: {
@@ -110,7 +120,13 @@ const translations = {
         toggleFullscreen: 'Toggle Fullscreen',
         toggleTimeFormat: 'Toggle 12h/24h Format',
         toggleLanguage: 'Toggle Language',
-        currentDate: 'Current Date & Time'
+        currentDate: 'Current Date & Time',
+        enableNotifications: 'Enable Notifications',
+        notificationsEnabled: 'Notifications enabled',
+        notifySehri: 'Sehri time has ended. Stop eating.',
+        notifyIftar: 'Iftar time. You may break your fast.',
+        installApp: 'Install app',
+        installHint: 'Use the install icon (⊕) in the address bar, or menu (⋮) → Install Ramadan Timer.'
     },
     bn: {
         title: 'রমজান টাইমার',
@@ -129,7 +145,13 @@ const translations = {
         notInRamadan: 'রমজান নেই',
         toggleFullscreen: 'পূর্ণস্ক্রীন টগল করুন',
         toggleTimeFormat: '১২/২৪ ঘণ্টা ফরম্যাট টগল করুন',
-        toggleLanguage: 'ভাষা পরিবর্তন করুন'
+        toggleLanguage: 'ভাষা পরিবর্তন করুন',
+        enableNotifications: 'নোটিফিকেশন চালু করুন',
+        notificationsEnabled: 'নোটিফিকেশন চালু আছে',
+        notifySehri: 'সাহরীর সময় শেষ। খাওয়া বন্ধ করুন।',
+        notifyIftar: 'ইফতারের সময়। আপনি রোজা ভাঙতে পারেন।',
+        installApp: 'অ্যাপ ইন্সটল করুন',
+        installHint: 'অ্যাড্রেস বারে ইন্সটল আইকন (⊕) বা মেনু (⋮) → Install Ramadan Timer ব্যবহার করুন।'
     }
 };
 
@@ -305,6 +327,68 @@ function formatTimeDifference(ms) {
     return { days, hours, minutes, seconds };
 }
 
+// --- Notifications & Adhan ---
+function requestNotificationPermission() {
+    if (!('Notification' in window)) return Promise.resolve(false);
+    if (Notification.permission === 'granted') return Promise.resolve(true);
+    if (Notification.permission === 'denied') return Promise.resolve(false);
+    return Notification.requestPermission().then(p => p === 'granted');
+}
+
+function showNotification(title, body) {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    try {
+        const n = new Notification(title, {
+            body,
+            icon: 'favicon.svg',
+            tag: 'ramadan-timer',
+            requireInteraction: false
+        });
+        n.onclick = () => { n.close(); window.focus(); };
+    } catch (e) { console.warn('Notification failed:', e); }
+}
+
+function playAdhan(type) {
+    const src = type === 'fajr' ? ADHAN_FAJR_SRC : ADHAN_IFTAR_SRC;
+    let audio = type === 'fajr' ? adhanFajr : adhanIftar;
+    if (!audio) {
+        audio = new Audio(src);
+        if (type === 'fajr') adhanFajr = audio; else adhanIftar = audio;
+        audio.onerror = function () {
+            var currentSrc = (this.src || '').split('?')[0];
+            if (currentSrc.endsWith(src) || currentSrc === src) {
+                this.src = ADHAN_FALLBACK_URL;
+                this.oncanplaythrough = function () { this.play().catch(function () {}); };
+                this.load();
+            }
+        };
+    }
+    audio.currentTime = 0;
+    audio.play().catch(function () {});
+}
+
+function checkAndTriggerNotificationAndAdhan() {
+    const todaySchedule = getTodaySchedule();
+    if (!todaySchedule) return;
+    const now = getBangladeshTime();
+    const currentTimeHHMM = getCurrentTime();
+    const dateKey = getCurrentDate();
+
+    // Sehri end = Fajr adhan at Sehri time
+    if (currentTimeHHMM === todaySchedule.sehri && lastNotifiedSehriKey !== dateKey) {
+        lastNotifiedSehriKey = dateKey;
+        showNotification(t('title'), t('notifySehri'));
+        playAdhan('fajr');
+    }
+
+    // Iftar time = Adhan at Iftar
+    if (currentTimeHHMM === todaySchedule.iftar && lastNotifiedIftarKey !== dateKey) {
+        lastNotifiedIftarKey = dateKey;
+        showNotification(t('title'), t('notifyIftar'));
+        playAdhan('iftar');
+    }
+}
+
 // Update the timer display
 function updateTimer() {
     try {
@@ -374,6 +458,9 @@ function updateTimer() {
             sehriTimeElement.textContent = '-';
             iftarTimeElement.textContent = '-';
         }
+
+        // Trigger browser notification and adhan at Sehri / Iftar time (once per event per day)
+        checkAndTriggerNotificationAndAdhan();
         
         // Update event name using translation key
         if (nextEventInfo.nameKey) {
@@ -568,7 +655,18 @@ function updateLanguage() {
         languageBtn.title = t('toggleLanguage');
         languageBtn.setAttribute('aria-label', t('toggleLanguage'));
     }
-    
+    const notifyBtn = document.getElementById('notify-btn');
+    if (notifyBtn) {
+        notifyBtn.title = Notification.permission === 'granted' ? t('notificationsEnabled') : t('enableNotifications');
+        notifyBtn.setAttribute('aria-label', notifyBtn.title);
+    }
+    var installBtn = document.getElementById('install-btn');
+    var installText = document.getElementById('install-btn-text');
+    if (installBtn && installText) {
+        installText.textContent = t('installApp');
+        installBtn.title = t('installApp');
+        installBtn.setAttribute('aria-label', t('installApp'));
+    }
     // Update event names and other dynamic content
     updateTimer();
     
@@ -810,6 +908,81 @@ function initCalendarButton() {
     });
 }
 
+// Initialize notifications button
+function initNotifications() {
+    const notifyBtn = document.getElementById('notify-btn');
+    if (!notifyBtn) return;
+    const updateNotifyButton = () => {
+        notifyBtn.title = Notification.permission === 'granted' ? t('notificationsEnabled') : t('enableNotifications');
+        notifyBtn.setAttribute('aria-label', notifyBtn.title);
+        notifyBtn.classList.toggle('notify-enabled', Notification.permission === 'granted');
+    };
+    updateNotifyButton();
+    notifyBtn.addEventListener('click', () => {
+        requestNotificationPermission().then((granted) => {
+            updateNotifyButton();
+        });
+    });
+}
+
+// PWA install button
+var deferredInstallPrompt = null;
+
+function initInstallButton() {
+    var installBtn = document.getElementById('install-btn');
+    var installText = document.getElementById('install-btn-text');
+    if (!installBtn || !installText) return;
+
+    function setInstallButtonLabel() {
+        installText.textContent = t('installApp');
+        installBtn.title = t('installApp');
+        installBtn.setAttribute('aria-label', t('installApp'));
+    }
+    setInstallButtonLabel();
+
+    window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+    });
+
+    installBtn.addEventListener('click', function () {
+        if (deferredInstallPrompt) {
+            deferredInstallPrompt.prompt();
+            deferredInstallPrompt.userChoice.then(function (choice) {
+                if (choice.outcome === 'accepted') installBtn.style.display = 'none';
+                deferredInstallPrompt = null;
+            });
+        } else {
+            showInstallHint();
+        }
+    });
+
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        installBtn.style.display = 'none';
+    }
+}
+
+function showInstallHint() {
+    var hint = t('installHint');
+    var el = document.getElementById('install-hint-toast');
+    if (el) el.remove();
+    el = document.createElement('div');
+    el.id = 'install-hint-toast';
+    el.className = 'install-hint-toast';
+    el.textContent = hint;
+    document.body.appendChild(el);
+    setTimeout(function () {
+        if (el.parentNode) el.parentNode.removeChild(el);
+    }, 6000);
+}
+
+// Register service worker for PWA
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+        navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+}
+
 // Start the timer when page loads (using system datetime)
 // This ensures the timer starts right away using the system's current date and time
 (function() {
@@ -822,7 +995,9 @@ function initCalendarButton() {
             initTimer();
             initFullscreen();
             initTimeFormat();
-            initCalendarButton(); // Initialize calendar button
+            initCalendarButton();
+            initNotifications();
+            initInstallButton();
         } else {
             // Retry after a short delay
             setTimeout(startTimer, 50);
