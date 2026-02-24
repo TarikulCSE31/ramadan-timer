@@ -661,9 +661,7 @@ function updateLanguage() {
         notifyBtn.setAttribute('aria-label', notifyBtn.title);
     }
     var installBtn = document.getElementById('install-btn');
-    var installText = document.getElementById('install-btn-text');
-    if (installBtn && installText) {
-        installText.textContent = t('installApp');
+    if (installBtn) {
         installBtn.title = t('installApp');
         installBtn.setAttribute('aria-label', t('installApp'));
     }
@@ -930,11 +928,9 @@ var deferredInstallPrompt = null;
 
 function initInstallButton() {
     var installBtn = document.getElementById('install-btn');
-    var installText = document.getElementById('install-btn-text');
-    if (!installBtn || !installText) return;
+    if (!installBtn) return;
 
     function setInstallButtonLabel() {
-        installText.textContent = t('installApp');
         installBtn.title = t('installApp');
         installBtn.setAttribute('aria-label', t('installApp'));
     }
