@@ -333,6 +333,7 @@ body {
     width: 50px;
     height: 50px;
     padding: 0;
+    box-sizing: border-box;
     background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(245, 158, 11, 0.15) 100%);
     border: 2px solid rgba(245, 158, 11, 0.5);
     border-radius: 12px;
@@ -447,7 +448,11 @@ body:-ms-fullscreen .calendar-btn,
 body:fullscreen .notify-btn,
 body:-webkit-full-screen .notify-btn,
 body:-moz-full-screen .notify-btn,
-body:-ms-fullscreen .notify-btn {
+body:-ms-fullscreen .notify-btn,
+body:fullscreen .install-btn,
+body:-webkit-full-screen .install-btn,
+body:-moz-full-screen .install-btn,
+body:-ms-fullscreen .install-btn {
     z-index: 9999;
     position: fixed;
     display: flex !important;
@@ -510,7 +515,19 @@ body:-ms-fullscreen .time-format-btn,
 body:fullscreen .language-btn,
 body:-webkit-full-screen .language-btn,
 body:-moz-full-screen .language-btn,
-body:-ms-fullscreen .language-btn {
+body:-ms-fullscreen .language-btn,
+body:fullscreen .calendar-btn,
+body:-webkit-full-screen .calendar-btn,
+body:-moz-full-screen .calendar-btn,
+body:-ms-fullscreen .calendar-btn,
+body:fullscreen .notify-btn,
+body:-webkit-full-screen .notify-btn,
+body:-moz-full-screen .notify-btn,
+body:-ms-fullscreen .notify-btn,
+body:fullscreen .install-btn,
+body:-webkit-full-screen .install-btn,
+body:-moz-full-screen .install-btn,
+body:-ms-fullscreen .install-btn {
     z-index: 9999;
     position: fixed;
     display: flex !important;
@@ -1072,10 +1089,8 @@ body:-ms-fullscreen .event-name {
     .install-btn {
         width: 40px;
         height: 40px;
-        min-width: 40px;
         bottom: 260px;
         right: 10px;
-        padding: 0;
     }
     
     .calendar-btn svg {
@@ -1252,10 +1267,8 @@ body:-ms-fullscreen .event-name {
     .install-btn {
         width: 35px;
         height: 35px;
-        min-width: 35px;
         bottom: 233px;
         right: 8px;
-        padding: 0;
     }
     
     .calendar-btn svg {
@@ -1322,10 +1335,8 @@ body:-ms-fullscreen .event-name {
     .install-btn {
         width: 45px;
         height: 45px;
-        min-width: 45px;
         bottom: 315px;
         right: 15px;
-        padding: 0;
     }
     
     .calendar-btn svg {
@@ -1414,8 +1425,6 @@ body:-ms-fullscreen .event-name {
     
     .install-btn {
         bottom: 233px;
-        min-width: 35px;
-        padding: 0;
     }
     
     .calendar-btn svg,
@@ -1766,6 +1775,21 @@ body:-ms-fullscreen .notify-btn {
     visibility: visible !important;
     opacity: 1 !important;
     bottom: 260px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+}
+
+body:fullscreen .install-btn,
+body:-webkit-full-screen .install-btn,
+body:-moz-full-screen .install-btn,
+body:-ms-fullscreen .install-btn {
+    z-index: 9999;
+    position: fixed;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    bottom: 320px;
     right: 20px;
     width: 50px;
     height: 50px;
