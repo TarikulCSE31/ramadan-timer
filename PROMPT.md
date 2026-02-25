@@ -26,7 +26,7 @@ Use this prompt to understand, replicate, or extend the Ramadan Timer project.
 
 1. **Time zone:** All logic uses **Bangladesh time (UTC+6)**. Current date/time and countdowns are computed in BST via `getBangladeshTime()`, `getCurrentDate()`, `getCurrentTime()`.
 2. **Ramadan schedule:** A fixed array `ramadanSchedule` holds 30 days (2026-02-19 to 2026-03-20) with `date`, `sehri`, `iftar` (HH:MM), and Bengali `dayName`. Countdown targets are built with `timeToDate(timeString, dateString)`.
-3. **Next event:** Before today’s Iftar → countdown to Iftar; after Iftar → countdown to next day’s Sehri. The same rule is used for the main screen and for which day is highlighted in the calendar.
+3. **Next event:** Three-way order (same rule for main screen and calendar highlight): (a) If current time is **before today’s Sehri end** → countdown to **Sehri**; (b) else if before today’s Iftar → countdown to **Iftar**; (c) else (after Iftar) → countdown to **next day’s Sehri** (or “Ramadan ended” on last day).
 4. **Displayed day:** If current BST time is after today’s Iftar, the UI shows the **next day’s** Ramadan day number and Sehri/Iftar times; otherwise it shows today’s.
 5. **Timer:** Updates every second; shows days (if &gt; 24h), hours, minutes, seconds until the next event. Days unit is hidden when countdown &lt; 24h.
 
@@ -41,8 +41,8 @@ Use this prompt to understand, replicate, or extend the Ramadan Timer project.
 - **Fullscreen:** One button toggles fullscreen; icon switches to “exit” when active. All floating buttons remain visible and positioned in fullscreen.
 - **Notifications:** “Enable notifications” button (bell icon) requests permission. At **Sehri** time (BST): notification “Sehri time has ended. Stop eating.” and play **Fajr adhan**. At **Iftar** time: notification “Iftar time. You may break your fast.” and play **Iftar adhan**. Each event is triggered once per day (tracked by date key).
 - **Adhan:** Local files `audio/fajr-adhan.mp3` and `audio/iftar-adhan.mp3`. If load fails, fallback to a public-domain adhan URL (e.g. Wikimedia). One playback per event per day.
-- **Install app (PWA):** Install button (download icon) always visible when not in standalone. On click: if `beforeinstallprompt` was stored, show native install dialog; else show a short toast with instructions (e.g. “Use the install icon in the address bar or menu → Install Ramadan Timer”). Button hidden when already running as installed app (`display-mode: standalone`).
-- **Floating buttons (bottom-right, top to bottom):** Install app, Notifications, Calendar, Language (EN/BN), Time format (24h/12h), Fullscreen. Same styling (gold border/glow), responsive sizes and spacing across breakpoints and fullscreen.
+- **Install app (PWA):** Install button (download icon only, same square size as other buttons) always visible when not in standalone. On click: if `beforeinstallprompt` was stored, show native install dialog; else show a short toast with instructions (e.g. “Use the install icon in the address bar or menu → Install Ramadan Timer”). Button hidden when already running as installed app (`display-mode: standalone`). CSS enforces icon-only (any text/span inside hidden, fixed 50×50).
+- **Floating buttons (bottom-right, top to bottom):** Install app, Notifications, Calendar, Language (EN/BN), Time format (24h/12h), Fullscreen. All icon-only (except EN/12h text); same square size and gold styling; responsive sizes and spacing across breakpoints and fullscreen; install button has `min-width`/`max-width` and hidden text so it never appears as a wide “Install app” bar.
 
 ---
 
@@ -101,7 +101,7 @@ Use this prompt to understand, replicate, or extend the Ramadan Timer project.
 
 - `getBangladeshTime()`, `getCurrentDate()`, `getCurrentTime()` – BST.
 - `timeToDate(timeString, dateString)` – Builds Date for a given date and HH:MM in BST.
-- `getTodaySchedule()`, `getNextDaySchedule()`, `findNextEvent()` – Schedule and next event.
+- `getTodaySchedule()`, `getNextDaySchedule()`, `findNextEvent()` – Schedule and next event. `findNextEvent()` uses: now &lt; todaySehri → Sehri; else now &lt; todayIftar → Iftar; else → next day’s Sehri (or Ramadan ended).
 - `formatTime()`, `formatTimeString()`, `formatDate()` – Display with 12h/24h and language.
 - `updateTimer()` – Writes date/time, Ramadan day, Sehri/Iftar, next event name, countdown; calls `checkAndTriggerNotificationAndAdhan()`.
 - `checkAndTriggerNotificationAndAdhan()` – At Sehri/Iftar (HH:MM match), once per day: show notification and `playAdhan('fajr'|'iftar')`.
@@ -125,4 +125,4 @@ Use this prompt to understand, replicate, or extend the Ramadan Timer project.
 
 ## Prompt (condensed for AI)
 
-“Build a single-page Ramadan Timer PWA that shows a live countdown to Sehri and Iftar for Ramadan 2026 in Bangladesh time (UTC+6). Include: 30-day schedule with Sehri/Iftar times; EN/BN and 12h/24h toggles with cookies; current date & time in BST; after Iftar show next day’s schedule and highlight; calendar modal with same highlight rule; fullscreen; browser notifications and adhan (Fajr at Sehri, adhan at Iftar) with optional local MP3 and fallback URL; PWA manifest and service worker; install button with fallback hint toast; dark theme with gold accents; one-screen layout; responsive and fullscreen-friendly floating buttons (install, notifications, calendar, language, time format, fullscreen). Use HTML, CSS, and vanilla JS only.”
+“Build a single-page Ramadan Timer PWA that shows a live countdown to Sehri and Iftar for Ramadan 2026 in Bangladesh time (UTC+6). Include: 30-day schedule with Sehri/Iftar times; EN/BN and 12h/24h toggles with cookies; current date & time in BST. **Next event logic (critical):** if current time is before today’s Sehri end → next event is Sehri (countdown to Sehri); else if before today’s Iftar → next event is Iftar; else → next event is next day’s Sehri (or Ramadan ended). After Iftar, show next day’s schedule and calendar highlight. Calendar modal with same highlight rule; fullscreen; browser notifications and adhan (Fajr at Sehri, adhan at Iftar) with optional local MP3 and fallback URL; PWA manifest and service worker; install button (icon-only, same size as other buttons) with fallback hint toast; dark theme with gold accents; one-screen layout; responsive and fullscreen-friendly floating buttons (install, notifications, calendar, language, time format, fullscreen). Use HTML, CSS, and vanilla JS only.”

@@ -982,6 +982,30 @@ function showInstallHint() {
     }, 6000);
 }
 
+// Pull-down to reload (mobile)
+function initPullToReload() {
+    var startY = 0;
+    var threshold = 80;
+
+    function atTop() {
+        var el = document.scrollingElement || document.documentElement;
+        return el && el.scrollTop <= 0;
+    }
+
+    document.addEventListener('touchstart', function (e) {
+        if (atTop()) startY = e.touches[0].clientY;
+        else startY = 0;
+    }, { passive: true });
+
+    document.addEventListener('touchend', function (e) {
+        if (startY === 0) return;
+        var endY = e.changedTouches[0].clientY;
+        var pull = endY - startY;
+        if (atTop() && pull >= threshold) location.reload();
+        startY = 0;
+    }, { passive: true });
+}
+
 // Register service worker for PWA
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
@@ -1004,6 +1028,7 @@ if ('serviceWorker' in navigator) {
             initCalendarButton();
             initNotifications();
             initInstallButton();
+            initPullToReload();
         } else {
             // Retry after a short delay
             setTimeout(startTimer, 50);
