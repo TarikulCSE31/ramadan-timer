@@ -982,10 +982,12 @@ function showInstallHint() {
     }, 6000);
 }
 
-// Pull-down to reload (mobile)
+// Pull-down to reload (mobile, works on Android)
 function initPullToReload() {
     var startY = 0;
+    var maxPull = 0;
     var threshold = 80;
+    var active = false;
 
     function atTop() {
         var el = document.scrollingElement || document.documentElement;
@@ -993,16 +995,36 @@ function initPullToReload() {
     }
 
     document.addEventListener('touchstart', function (e) {
-        if (atTop()) startY = e.touches[0].clientY;
-        else startY = 0;
+        if (!atTop() || e.touches.length !== 1) return;
+        var y = e.touches[0].clientY;
+        if (y > 200) return;
+        startY = y;
+        maxPull = 0;
+        active = true;
     }, { passive: true });
 
+    document.addEventListener('touchmove', function (e) {
+        if (!active || startY === 0 || e.touches.length !== 1) return;
+        var y = e.touches[0].clientY;
+        var pull = y - startY;
+        if (pull > 0) {
+            maxPull = Math.max(maxPull, pull);
+            if (atTop() && maxPull > 10) e.preventDefault();
+        }
+    }, { passive: false });
+
     document.addEventListener('touchend', function (e) {
-        if (startY === 0) return;
-        var endY = e.changedTouches[0].clientY;
-        var pull = endY - startY;
-        if (atTop() && pull >= threshold) location.reload();
+        if (!active) return;
+        if (maxPull >= threshold) location.reload();
         startY = 0;
+        maxPull = 0;
+        active = false;
+    }, { passive: true });
+
+    document.addEventListener('touchcancel', function () {
+        active = false;
+        startY = 0;
+        maxPull = 0;
     }, { passive: true });
 }
 
