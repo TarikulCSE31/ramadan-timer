@@ -248,8 +248,18 @@ function findNextEvent() {
     
     // If we're in Ramadan
     if (todaySchedule) {
+        const todaySehri = timeToDate(todaySchedule.sehri, todaySchedule.date);
         const todayIftar = timeToDate(todaySchedule.iftar, todaySchedule.date);
         
+        // If current time is before Sehri end, next event is Sehri
+        if (now < todaySehri) {
+            return {
+                event: todaySehri,
+                name: 'সাহরী',
+                nameKey: 'sehri',
+                schedule: todaySchedule
+            };
+        }
         // If current time is before Iftar, show countdown to Iftar
         if (now < todayIftar) {
             return {
