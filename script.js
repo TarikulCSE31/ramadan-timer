@@ -37,32 +37,33 @@ const ramadanSchedule = [
     { day: 30, date: '2026-03-20', dayName: 'শুক্রবার', sehri: '04:47', iftar: '18:11' }
 ];
 
-// Get current date and time in Bangladesh Standard Time (BST, UTC+6)
+// Bangladesh is UTC+6
+var BST_OFFSET_MS = 6 * 60 * 60 * 1000;
+
+// Current moment as Date (same instant everywhere); use for comparisons
 function getBangladeshTime() {
-    const now = new Date();
-    // Bangladesh is UTC+6
-    const bangladeshOffset = 6 * 60; // 6 hours in minutes
-    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-    const bangladeshTime = new Date(utc + (bangladeshOffset * 60000));
-    return bangladeshTime;
+    return new Date();
+}
+
+// Bangladesh date/time from current instant (for display and schedule lookup)
+function getBangladeshDateObject() {
+    return new Date(new Date().getTime() + BST_OFFSET_MS);
 }
 
 // Get current date in YYYY-MM-DD format (Bangladesh time)
-// For testing: you can temporarily modify this function to return a date within Ramadan
-// Example: return '2025-02-25'; // This would simulate being on day 7 of Ramadan
 function getCurrentDate() {
-    const bangladeshTime = getBangladeshTime();
-    const year = bangladeshTime.getFullYear();
-    const month = String(bangladeshTime.getMonth() + 1).padStart(2, '0');
-    const day = String(bangladeshTime.getDate()).padStart(2, '0');
+    const bd = getBangladeshDateObject();
+    const year = bd.getUTCFullYear();
+    const month = String(bd.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(bd.getUTCDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
 
 // Get current time in HH:MM format (Bangladesh time)
 function getCurrentTime() {
-    const bangladeshTime = getBangladeshTime();
-    const hours = String(bangladeshTime.getHours()).padStart(2, '0');
-    const minutes = String(bangladeshTime.getMinutes()).padStart(2, '0');
+    const bd = getBangladeshDateObject();
+    const hours = String(bd.getUTCHours()).padStart(2, '0');
+    const minutes = String(bd.getUTCMinutes()).padStart(2, '0');
     return `${hours}:${minutes}`;
 }
 
@@ -197,17 +198,31 @@ function formatTimeString(timeString) {
     }
 }
 
-// Format date in a readable format
+// Format date in a readable format (uses local date parts)
 function formatDate(date) {
-    const monthNamesEn = ['January', 'February', 'March', 'April', 'May', 'June', 
+    const monthNamesEn = ['January', 'February', 'March', 'April', 'May', 'June',
                           'July', 'August', 'September', 'October', 'November', 'December'];
-    const monthNamesBn = ['জানুয়ারী', 'ফেব্রুয়ারী', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 
+    const monthNamesBn = ['জানুয়ারী', 'ফেব্রুয়ারী', 'মার্চ', 'এপ্রিল', 'মে', 'জুন',
                           'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
-    
     const day = date.getDate();
     const month = date.getMonth();
     const year = date.getFullYear();
-    
+    if (currentLanguage === 'bn') {
+        return `${day} ${monthNamesBn[month]}, ${year}`;
+    } else {
+        return `${monthNamesEn[month]} ${day}, ${year}`;
+    }
+}
+
+// Format date from a BST date object (use UTC parts = Bangladesh date)
+function formatDateBST(bdDate) {
+    const monthNamesEn = ['January', 'February', 'March', 'April', 'May', 'June',
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+    const monthNamesBn = ['জানুয়ারী', 'ফেব্রুয়ারী', 'মার্চ', 'এপ্রিল', 'মে', 'জুন',
+                          'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
+    const day = bdDate.getUTCDate();
+    const month = bdDate.getUTCMonth();
+    const year = bdDate.getUTCFullYear();
     if (currentLanguage === 'bn') {
         return `${day} ${monthNamesBn[month]}, ${year}`;
     } else {
@@ -423,12 +438,13 @@ function updateTimer() {
             return;
         }
         
-        // Display current Bangladesh date and time
-        const hours = now.getHours();
-        const minutes = now.getMinutes();
-        const secs = now.getSeconds();
+        // Display current Bangladesh date and time (use BST for display)
+        const bdDisplay = getBangladeshDateObject();
+        const hours = bdDisplay.getUTCHours();
+        const minutes = bdDisplay.getUTCMinutes();
+        const secs = bdDisplay.getUTCSeconds();
         const formattedTime = formatTime(hours, minutes, secs);
-        const formattedDate = formatDate(now);
+        const formattedDate = formatDateBST(bdDisplay);
         systemTimeElement.textContent = `${t('currentTime')}: ${formattedDate} - ${formattedTime}`;
         
         // Find the next event based on current Ramadan day
