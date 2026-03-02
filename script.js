@@ -40,14 +40,32 @@ const ramadanSchedule = [
 // Bangladesh is UTC+6
 var BST_OFFSET_MS = 6 * 60 * 60 * 1000;
 
+// Debug: set to 'HH:MM' (e.g. '04:45') to fake current Bangladesh time for testing. Set to null to use real time.
+var DEBUG_BST_TIME = '';
+
+// Real today in Bangladesh (no override), for debug date
+function getCurrentDateReal() {
+    var d = new Date(new Date().getTime() + BST_OFFSET_MS);
+    var y = d.getUTCFullYear(), m = d.getUTCMonth(), day = d.getUTCDate();
+    return y + '-' + String(m + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+}
+
 // Current moment as Date (same instant everywhere); use for comparisons
 function getBangladeshTime() {
+    if (typeof DEBUG_BST_TIME === 'string' && DEBUG_BST_TIME) {
+        var parts = DEBUG_BST_TIME.split(':');
+        var h = parseInt(parts[0], 10), m = parseInt(parts[1] || '0', 10);
+        var dateStr = getCurrentDateReal();
+        var ymd = dateStr.split('-').map(Number);
+        return new Date(Date.UTC(ymd[0], ymd[1] - 1, ymd[2], h, m, 0, 0) - BST_OFFSET_MS);
+    }
     return new Date();
 }
 
 // Bangladesh date/time from current instant (for display and schedule lookup)
 function getBangladeshDateObject() {
-    return new Date(new Date().getTime() + BST_OFFSET_MS);
+    var instant = getBangladeshTime().getTime();
+    return new Date(instant + BST_OFFSET_MS);
 }
 
 // Get current date in YYYY-MM-DD format (Bangladesh time)
@@ -258,6 +276,8 @@ function getNextDaySchedule() {
 // Returns: { event: Date, name: string, nameKey: string, schedule: object }
 function findNextEvent() {
     const now = getBangladeshTime();
+    const currentDate = getCurrentDate();
+    const currentTimeHHMM = getCurrentTime();
     const todaySchedule = getTodaySchedule();
     const nextDaySchedule = getNextDaySchedule();
     
@@ -266,8 +286,8 @@ function findNextEvent() {
         const todaySehri = timeToDate(todaySchedule.sehri, todaySchedule.date);
         const todayIftar = timeToDate(todaySchedule.iftar, todaySchedule.date);
         
-        // If current time is before Sehri end, next event is Sehri
-        if (now < todaySehri) {
+        // If we're on today's date and current time is before Sehri end, next event is Sehri (use date + time so logic is unambiguous)
+        if (currentDate === todaySchedule.date && currentTimeHHMM < todaySchedule.sehri) {
             return {
                 event: todaySehri,
                 name: 'সাহরী',
@@ -276,7 +296,7 @@ function findNextEvent() {
             };
         }
         // If current time is before Iftar, show countdown to Iftar
-        if (now < todayIftar) {
+        if (now.getTime() < todayIftar.getTime()) {
             return {
                 event: todayIftar,
                 name: 'ইফতার',
